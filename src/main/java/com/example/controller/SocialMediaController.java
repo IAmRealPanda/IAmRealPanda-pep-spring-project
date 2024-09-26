@@ -6,6 +6,7 @@ import com.example.service.AccountService;
 import com.example.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,7 +18,27 @@ import java.util.List;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 @RestController
-@RequestMapping("/api")
 public class SocialMediaController {
+    
+    private AccountService accountService;
+    @Autowired
+    public SocialMediaController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody Account account) {
+        try {
+            // service
+            Account newAccount = accountService.registerAccount(account.getUsername(), account.getPassword());
+            return ResponseEntity.ok(newAccount);  
+        } catch (Exception e) {
+            // different errors
+            if (e.getMessage().equals("Username already exists")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage()); // 409 
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400 
+            }
+        }
+    }
 }
