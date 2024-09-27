@@ -2,8 +2,7 @@ package com.example.controller;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
-import com.example.exception.InvalidInputException;
-import com.example.exception.UsernameAlreadyExistsException;
+import com.example.exception.*;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,11 @@ import java.util.List;
 public class SocialMediaController {
     
     private AccountService accountService;
+    private MessageService messageService;
     @Autowired
-    public SocialMediaController(AccountService accountService) {
+    public SocialMediaController(AccountService accountService, MessageService messageService) {
         this.accountService = accountService;
+        this.messageService = messageService;
     }
 
     @PostMapping("/register")
@@ -52,6 +53,21 @@ public class SocialMediaController {
             return ResponseEntity.ok(existingAccount);
         } catch(InvalidInputException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body((e.getMessage())); // 401
+        }
+    }
+
+    // new message
+    @PostMapping("/messages")
+    public ResponseEntity<?> newMessage (@RequestBody Message message) {
+        try{
+            // service
+            Message newMessage = messageService.creatMessage(message);
+            return ResponseEntity.ok(newMessage);
+
+        } catch( InvalidInputException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
+        } catch (UserDoesNotExistException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
         }
     }
 }
