@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
  * found in readme.md as well as the test cases. You be required to use the @GET/POST/PUT/DELETE/etc Mapping annotations
@@ -70,4 +72,36 @@ public class SocialMediaController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
         }
     }
+
+    //get all messages
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getAllMessages() {
+        try {
+            // service
+            List<Message> allMessages = messageService.getAllMessages();
+            return ResponseEntity.ok(allMessages);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList()); // server error
+        }
+    }
+
+    // get message by messageID
+    @GetMapping("/messages/{messageId}")
+    public ResponseEntity<Message> getMessageByID(@PathVariable Integer messageId) {
+        try {
+            Optional<Message> msg = messageService.getMessageByID(messageId);
+            
+            // null check
+            if(msg.isPresent()) {
+                return ResponseEntity.ok(msg.get()); // 200
+            } else {
+                return ResponseEntity.ok(null); // empty
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // servor error
+        }
+
+    }
+
+
 }
