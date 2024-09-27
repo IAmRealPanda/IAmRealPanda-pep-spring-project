@@ -2,6 +2,8 @@ package com.example.controller;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.exception.InvalidInputException;
+import com.example.exception.UsernameAlreadyExistsException;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +34,24 @@ public class SocialMediaController {
             // service
             Account newAccount = accountService.registerAccount(account.getUsername(), account.getPassword());
             return ResponseEntity.ok(newAccount);  
-        } catch (Exception e) {
+        } catch (UsernameAlreadyExistsException  e) {
             // different errors
-            if (e.getMessage().equals("Username already exists")) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage()); // 409 
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400 
-            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage()); // 409
+        } catch (InvalidInputException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
+        }
+    }
+
+    // login 
+    @PostMapping("/login")
+    public ResponseEntity<?> userLogin (@RequestBody Account account) {
+        try {
+            // service
+            Account existingAccount = accountService.accountLogin(account.getUsername(), account.getPassword());
+
+            return ResponseEntity.ok(existingAccount);
+        } catch(InvalidInputException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body((e.getMessage())); // 401
         }
     }
 }
