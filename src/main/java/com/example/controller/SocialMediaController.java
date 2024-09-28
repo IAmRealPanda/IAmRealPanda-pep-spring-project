@@ -144,4 +144,16 @@ public class SocialMediaController {
         }
     }
 
+    // get all messages based on account id
+    @GetMapping("/accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> getMessagesByAccountId(@PathVariable Integer accountId) {
+        try {
+            // service
+            List<Message> allMessages = messageService.getAllMessagesByUserID(accountId);
+            return ResponseEntity.ok(allMessages);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.ok(Collections.emptyList()); // server error - but returning empty list for now
+        }
+    }
+
 }

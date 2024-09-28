@@ -78,4 +78,10 @@ public class MessageService {
         return 1;
     }
 
+    // get all messages by user ID
+    public List<Message> getAllMessagesByUserID(int accountId) throws ResourceNotFoundException {
+        // call repo
+        return messageRepository.findByPostedBy(accountId);
+    }
+
 }
