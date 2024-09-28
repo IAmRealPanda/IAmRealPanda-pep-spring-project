@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.entity.*;
 import com.example.exception.*;
@@ -35,12 +36,41 @@ public class MessageService {
     }
 
     // get all messages
-    public List<Message> getAllMessages() {
+    public List<Message> getAllMessages() throws ResourceNotFoundException{
         return messageRepository.findAll();
     }
 
     // get message by id
-    public Optional<Message> getMessageByID(int msgID) {
+    public Optional<Message> getMessageByID(int msgID) throws ResourceNotFoundException {
         return messageRepository.findById(msgID);
     }
+
+    // delete message by ID
+    public void deleteMessageByID (int msgID) throws ResourceNotFoundException {
+        try {
+            messageRepository.deleteById(msgID);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Error while deleting message");
+        }
+    }
+
+
+    // // update message
+    // @Transactional
+    // public int updateMessage(Integer messageId, String newMessageText) {
+    //     return messageRepository.updateMessageTextById(messageId, newMessageText);
+    // }
+
+
+    // // get all messages by account ID
+    // public List<Message> getAllMessagesByAccountID(Integer id) throws ResourceNotFoundException {
+    //     //return messageRepository.findMessagesByAccountId(id);
+    //     // try {
+           
+    //     // } catch (Exception e) {
+    //     //     System.out.println(e.getMessage());
+    //     //     throw new ResourceNotFoundException("Error while deleting message");
+    //     // }
+    //     return messageRepository.findMessagesByAccountId(id);
+    // }
 }

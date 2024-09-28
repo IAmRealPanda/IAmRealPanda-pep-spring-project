@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -80,7 +80,7 @@ public class SocialMediaController {
             // service
             List<Message> allMessages = messageService.getAllMessages();
             return ResponseEntity.ok(allMessages);
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList()); // server error
         }
     }
@@ -97,11 +97,83 @@ public class SocialMediaController {
             } else {
                 return ResponseEntity.ok(null); // empty
             }
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // servor error
         }
 
     }
 
+    // delete message by ID
+    @DeleteMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessageByID (@PathVariable Integer messageId) {
+        try {
+            // returning number of rows affeceted by delete thus the integer return
+            // see if messages exists
+            Optional<Message> msg = messageService.getMessageByID(messageId);
+            // null check
+            if(msg.isPresent()) {
+                messageService.deleteMessageByID(messageId);
+                return ResponseEntity.ok(1);
+            } else {
+                return ResponseEntity.ok(null);
+            }
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // servor error 500
+        }
+    }
+
+
+    // update message
+    // @PatchMapping("/messages/{messageId}")
+    // public ResponseEntity<?> updateMessage(@PathVariable Integer messageId, @RequestBody Map<String, String> update) {
+    //     String newMessageText = update.get("messageText");
+        
+    //     // Validate the new message text
+    //     if (newMessageText == null || newMessageText.isBlank() || newMessageText.length() > 255) {
+    //         return ResponseEntity.badRequest().body("Invalid message text");
+    //     }
+
+    //     // Attempt to update the message
+    //     int updatedRows = messageService.updateMessage(messageId, newMessageText);
+        
+    //     if (updatedRows == 1) {
+    //         return ResponseEntity.ok(updatedRows);
+    //     } else {
+    //         return ResponseEntity.badRequest().body("Message not found or could not be updated");
+    //     }
+    // }
+    // @PatchMapping("/messages/{messageId}")
+    // public ResponseEntity<Integer> editMessage(@RequestBody Message messageText, @PathVariable int messageId) {
+    //     //String newMessageText = update.get("messageText");
+
+    //     //Validate the new message text
+    //     // if (messageText.getMessageText() == null || messageText.getMessageText().isBlank() || messageText.getMessageText().length() > 255) {
+    //     //     return ResponseEntity.badRequest().body("Invalid message text");
+    //     // }
+
+    //     // Attempt to update the message
+    //     int updatedRows = messageService.updateMessage(messageId, messageText.getMessageText());
+
+    //     if (updatedRows == 1) {
+    //         return ResponseEntity.ok(updatedRows);
+    //     } else {
+    //         return ResponseEntity.badRequest().body(0);
+    //     }
+    // }
+
+    // get all messages by account 
+    // @GetMapping("/accounts/{accountId}/messages")
+    // public ResponseEntity<List<Message>> getAllMessagesByAccountID(@PathVariable int accountId) throws ResourceNotFoundException {
+    //     try {
+    //         List<Message> msgs = messageService.getAllMessagesByAccountID(accountId);
+    //         return ResponseEntity.ok(msgs);
+    //     } catch (Exception e) {
+    //         System.out.println(e.getMessage());
+    //         throw new ResourceNotFoundException("Error while deleting message");
+    //     }
+        
+        
+
+    // }
 
 }
