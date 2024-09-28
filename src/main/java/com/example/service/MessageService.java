@@ -28,7 +28,7 @@ public class MessageService {
         // does user exist
         Optional<Account> existingAccount = accountRepository.findById(message.getPostedBy());
         if (existingAccount.isEmpty()) {
-            throw new UserDoesNotExistException ("Posted by user does not exist");
+            throw new UserDoesNotExistException ("Account does not exist");
         }
 
         // Save the message

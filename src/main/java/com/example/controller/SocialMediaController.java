@@ -32,44 +32,44 @@ public class SocialMediaController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody Account account) {
+    public ResponseEntity<Account> registerUser(@RequestBody Account account) {
         try {
             // service
             Account newAccount = accountService.registerAccount(account.getUsername(), account.getPassword());
             return ResponseEntity.ok(newAccount);  
         } catch (UsernameAlreadyExistsException  e) {
             // different errors
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage()); // 409
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // 409
         } catch (InvalidInputException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400
         }
     }
 
     // login 
     @PostMapping("/login")
-    public ResponseEntity<?> userLogin (@RequestBody Account account) {
+    public ResponseEntity<Account> userLogin (@RequestBody Account account) {
         try {
             // service
             Account existingAccount = accountService.accountLogin(account.getUsername(), account.getPassword());
 
             return ResponseEntity.ok(existingAccount);
         } catch(InvalidInputException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body((e.getMessage())); // 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // 401
         }
     }
 
     // new message
     @PostMapping("/messages")
-    public ResponseEntity<?> newMessage (@RequestBody Message message) {
+    public ResponseEntity<Message> newMessage (@RequestBody Message message) {
         try{
             // service
             Message newMessage = messageService.creatMessage(message);
             return ResponseEntity.ok(newMessage);
 
         } catch( InvalidInputException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400
         } catch (UserDoesNotExistException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400
         }
     }
 

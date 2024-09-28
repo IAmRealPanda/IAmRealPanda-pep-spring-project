@@ -19,12 +19,12 @@ public class AccountService {
     public Account registerAccount(String username, String password) throws InvalidInputException, UsernameAlreadyExistsException {
         // blank username
         if (username == null || username.trim().isEmpty()) {
-            throw new InvalidInputException ("Username cannot be blank");
+            throw new InvalidInputException ("Username cant blank");
         }
         
         // password must be 4 characters
         if (password == null || password.length() < 4) {
-            throw new InvalidInputException ("Password must be at least 4 characters long");
+            throw new InvalidInputException ("Password must be 4 characters long");
         }
 
         // no duplicate username
