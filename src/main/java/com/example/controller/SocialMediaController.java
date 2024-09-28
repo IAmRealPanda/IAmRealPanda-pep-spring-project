@@ -122,58 +122,26 @@ public class SocialMediaController {
         }
     }
 
-
     // update message
-    // @PatchMapping("/messages/{messageId}")
-    // public ResponseEntity<?> updateMessage(@PathVariable Integer messageId, @RequestBody Map<String, String> update) {
-    //     String newMessageText = update.get("messageText");
-        
-    //     // Validate the new message text
-    //     if (newMessageText == null || newMessageText.isBlank() || newMessageText.length() > 255) {
-    //         return ResponseEntity.badRequest().body("Invalid message text");
-    //     }
+    @PatchMapping("/messages/{messageId}")
+    public ResponseEntity<?> updateMessageText(@PathVariable Integer messageId, @RequestBody Map<String, String> updates) {
+        try {
+            // is message in message body
+            if (!updates.containsKey("messageText")) {
+                throw new InvalidInputException("Message text is required for updating.");
+            }
+            String newMessageText = updates.get("messageText");
 
-    //     // Attempt to update the message
-    //     int updatedRows = messageService.updateMessage(messageId, newMessageText);
-        
-    //     if (updatedRows == 1) {
-    //         return ResponseEntity.ok(updatedRows);
-    //     } else {
-    //         return ResponseEntity.badRequest().body("Message not found or could not be updated");
-    //     }
-    // }
-    // @PatchMapping("/messages/{messageId}")
-    // public ResponseEntity<Integer> editMessage(@RequestBody Message messageText, @PathVariable int messageId) {
-    //     //String newMessageText = update.get("messageText");
+            // service
+            int rowsUpdated = messageService.updateMessageText(messageId, newMessageText);
 
-    //     //Validate the new message text
-    //     // if (messageText.getMessageText() == null || messageText.getMessageText().isBlank() || messageText.getMessageText().length() > 255) {
-    //     //     return ResponseEntity.badRequest().body("Invalid message text");
-    //     // }
-
-    //     // Attempt to update the message
-    //     int updatedRows = messageService.updateMessage(messageId, messageText.getMessageText());
-
-    //     if (updatedRows == 1) {
-    //         return ResponseEntity.ok(updatedRows);
-    //     } else {
-    //         return ResponseEntity.badRequest().body(0);
-    //     }
-    // }
-
-    // get all messages by account 
-    // @GetMapping("/accounts/{accountId}/messages")
-    // public ResponseEntity<List<Message>> getAllMessagesByAccountID(@PathVariable int accountId) throws ResourceNotFoundException {
-    //     try {
-    //         List<Message> msgs = messageService.getAllMessagesByAccountID(accountId);
-    //         return ResponseEntity.ok(msgs);
-    //     } catch (Exception e) {
-    //         System.out.println(e.getMessage());
-    //         throw new ResourceNotFoundException("Error while deleting message");
-    //     }
-        
-        
-
-    // }
+            // rows updated - either 1 or 0
+            return ResponseEntity.ok(rowsUpdated);
+        } catch (InvalidInputException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 400, but in reality should be 404
+        }
+    }
 
 }

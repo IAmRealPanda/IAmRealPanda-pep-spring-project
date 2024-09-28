@@ -55,22 +55,27 @@ public class MessageService {
     }
 
 
-    // // update message
-    // @Transactional
-    // public int updateMessage(Integer messageId, String newMessageText) {
-    //     return messageRepository.updateMessageTextById(messageId, newMessageText);
-    // }
+    // update message
+    @Transactional
+    public int updateMessageText(int messageId, String newMessageText) throws InvalidInputException, ResourceNotFoundException {
+        // validate new message
+        if (newMessageText == null || newMessageText.trim().isEmpty() || newMessageText.length() > 255) {
+            throw new InvalidInputException("Message can not be blank and under 255 characters");
+        }
+    
+        // message exists
+        Optional<Message> existingMessage = messageRepository.findById(messageId);
+        if (existingMessage.isEmpty()) {
+            throw new ResourceNotFoundException("Message with ID " + messageId + " does not exist.");
+        }
+    
+        // update the message
+        Message messageToUpdate = existingMessage.get();
+        messageToUpdate.setMessageText(newMessageText);
+        messageRepository.save(messageToUpdate);
+    
+        // return rows updates in db - default 1
+        return 1;
+    }
 
-
-    // // get all messages by account ID
-    // public List<Message> getAllMessagesByAccountID(Integer id) throws ResourceNotFoundException {
-    //     //return messageRepository.findMessagesByAccountId(id);
-    //     // try {
-           
-    //     // } catch (Exception e) {
-    //     //     System.out.println(e.getMessage());
-    //     //     throw new ResourceNotFoundException("Error while deleting message");
-    //     // }
-    //     return messageRepository.findMessagesByAccountId(id);
-    // }
 }
